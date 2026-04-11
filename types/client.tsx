@@ -35,3 +35,7 @@ export interface ChatInputProps {
     onInputChange: (e: React.ChangeEvent<HTMLInputElement>) => void
     onSubmit: (e: React.FormEvent<HTMLFormElement>) => void
   }
+  
+  export interface HeroSectionProps {
+    backgroundImageUrl: string
+  }

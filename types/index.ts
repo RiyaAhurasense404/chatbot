@@ -14,6 +14,7 @@ export interface Session {
   title: string | null
   created_at: string
 }
+
 export interface ChatRequestBody {
   message: string
   sessionId: string
@@ -34,8 +35,34 @@ export interface ApiErrorResponse {
 }
 
 export interface StreamHandlerParams {
-    sessionId: string
-    trimmedMessage: string
-    messages: ChatMessage[]
-    messageCount: number
-  }
+  sessionId: string
+  trimmedMessage: string
+  messages: ChatMessage[]
+  messageCount: number
+}
+
+export interface HeroContent {
+  background_image_url: string
+}
+
+export interface Category {
+  id: string
+  name: string
+  image_url: string
+  display_order: number
+  size: 'large' | 'small'
+}
+
+export interface LandingPageData {
+  hero: HeroContent
+  categories: Category[]
+  banners: Banner[]
+}
+
+export interface Banner {
+  id: string
+  text: string
+  image_url: string
+  background_image_url: string
+  display_order: number
+}

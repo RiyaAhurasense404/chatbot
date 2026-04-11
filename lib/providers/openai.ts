@@ -16,7 +16,7 @@ const openai = createOpenAI({
 export class OpenAIProvider implements AIProvider {
   private model: string
 
-  constructor(model: string = 'gpt-5') {
+  constructor(model: string = 'gpt-4o') {
     this.model = model
   }
 

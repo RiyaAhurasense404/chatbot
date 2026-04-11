@@ -1,5 +1,3 @@
-// utils/errors.ts
-
 export class AppError extends Error {
     public code: string
     public statusCode: number

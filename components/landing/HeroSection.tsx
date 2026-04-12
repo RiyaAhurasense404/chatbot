@@ -5,7 +5,7 @@ import type { HeroSectionProps } from "@/types/client";
 export default function HeroSection({ backgroundImageUrl }: HeroSectionProps) {
   return (
     <>
-      <div className="h-10" />
+      <div className="" />
 
       <section className="relative w-full h-[725px] overflow-hidden">
         <Image

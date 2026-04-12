@@ -66,3 +66,16 @@ export interface Banner {
   background_image_url: string
   display_order: number
 }
+
+
+export interface SessionData {
+  isLoggedIn: boolean
+  username: string
+}
+
+export interface Admin {
+  id: string
+  username: string
+  password_hash: string
+  created_at?: string
+}

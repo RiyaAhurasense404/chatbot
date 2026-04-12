@@ -1,8 +1,7 @@
-import Navbar from '@/components/landing/Navbar'
-import NavbarWrapper from '@/components/landing/NavbarWrapper'
 import HeroSection from '@/components/landing/HeroSection'
 import DynamicSections from '@/components/landing/DynamicSections'
 import { getLandingPageData } from '@/lib/cache/landingCache'
+import Navbar from '@/components/landing/Navbar'
 
 export default async function LandingPage() {
   console.log('🚀 LandingPage — server render started')
@@ -12,6 +11,7 @@ export default async function LandingPage() {
 
   return (
     <main>
+        <Navbar />
       
       <HeroSection backgroundImageUrl={data.hero.background_image_url} />
       <DynamicSections

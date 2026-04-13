@@ -20,8 +20,11 @@ if (!supabaseAnonKey) {
 export const supabaseServer = createClient(supabaseUrl, supabaseServiceKey, {
   auth: {
     autoRefreshToken: false,
-    persistSession: false
-  }
+    persistSession: false,
+  },
+  global: {
+    fetch: fetch.bind(globalThis),
+  },
 })
 
 export const supabaseClient = createClient(supabaseUrl, supabaseAnonKey)

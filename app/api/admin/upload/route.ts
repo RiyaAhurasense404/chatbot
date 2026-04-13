@@ -14,7 +14,7 @@ export async function POST(request: Request): Promise<Response> {
 
     const allowedTypes = ['image/jpeg', 'image/png', 'image/webp', 'image/jpg']
     if (!allowedTypes.includes(file.type)) {
-      throw new ValidationError('Only JPEG, PNG and WebP images are allowed')
+      throw new ValidationError('Only JPEG PNG and WebP images are allowed')
     }
 
     const maxSize = 5 * 1024 * 1024
@@ -28,13 +28,25 @@ export async function POST(request: Request): Promise<Response> {
       ? `${folder}/${timestamp}.${extension}`
       : `${timestamp}.${extension}`
 
-    const buffer = await file.arrayBuffer()
+    // convert file to buffer
+    const stream = file.stream()
+    const chunks: Uint8Array[] = []
+    const reader = stream.getReader()
 
+    while (true) {
+      const { done, value } = await reader.read()
+      if (done) break
+      chunks.push(value)
+    }
+
+    const buffer = Buffer.concat(chunks)
+
+    // use buffer not bytes
     const { data, error } = await supabaseServer.storage
       .from('landing-images')
       .upload(fileName, buffer, {
         contentType: file.type,
-        upsert: true,
+        upsert: false,
       })
 
     if (error) {

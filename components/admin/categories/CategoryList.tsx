@@ -50,11 +50,20 @@ export default function CategoryList({ categories }: CategoryListProps) {
 
               <td className="px-6 py-4">
                 <div className="w-12 h-12 rounded-lg overflow-hidden bg-gray-100">
-                  <img
-                    src={category.image_url}
-                    alt={category.name}
-                    className="w-full h-full object-cover"
-                  />
+                  {category.media_type === 'video' ? (
+                    <video
+                      src={category.image_url}
+                      className="w-full h-full object-cover"
+                      muted
+                      playsInline
+                    />
+                  ) : (
+                    <img
+                      src={category.image_url}
+                      alt={category.name}
+                      className="w-full h-full object-cover"
+                    />
+                  )}
                 </div>
               </td>
 

@@ -1,3 +1,5 @@
+import { MediaType } from './media'
+
 export type MessageRole = 'user' | 'assistant' | 'system'
 
 export interface Message {
@@ -42,15 +44,28 @@ export interface StreamHandlerParams {
 }
 
 export interface HeroContent {
+  id?: string
   background_image_url: string
+  background_media_type: MediaType
 }
 
 export interface Category {
   id: string
   name: string
   image_url: string
+  media_type: MediaType
   display_order: number
   size: 'large' | 'small'
+}
+
+export interface Banner {
+  id: string
+  text: string
+  image_url: string
+  media_type: MediaType
+  background_image_url: string
+  background_media_type: MediaType
+  display_order: number
 }
 
 export interface LandingPageData {
@@ -58,15 +73,6 @@ export interface LandingPageData {
   categories: Category[]
   banners: Banner[]
 }
-
-export interface Banner {
-  id: string
-  text: string
-  image_url: string
-  background_image_url: string
-  display_order: number
-}
-
 
 export interface SessionData {
   isLoggedIn: boolean

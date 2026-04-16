@@ -8,11 +8,22 @@ export default function CategoryCard({ category }: CategoryCardProps) {
   return (
     <div className="relative w-full h-full rounded-xl cursor-pointer group overflow-hidden">
 
-      <img
-        src={category.image_url}
-        alt={category.name}
-        className="w-full h-full object-cover object-center transition-transform duration-500 ease-out group-hover:scale-105"
-      />
+      {category.media_type === 'video' ? (
+        <video
+          src={category.image_url}
+          className="w-full h-full object-cover object-center transition-transform duration-500 ease-out group-hover:scale-105"
+          autoPlay
+          muted
+          loop
+          playsInline
+        />
+      ) : (
+        <img
+          src={category.image_url}
+          alt={category.name}
+          className="w-full h-full object-cover object-center transition-transform duration-500 ease-out group-hover:scale-105"
+        />
+      )}
 
       <div className="absolute inset-0 bg-gradient-to-t from-black/95 via-black/10 to-transparent transition-all duration-300 group-hover:from-black/80" />
 

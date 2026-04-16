@@ -47,11 +47,20 @@ export default function BannerList({ banners }: BannerListProps) {
 
               <td className="px-6 py-4">
                 <div className="w-12 h-12 rounded-lg overflow-hidden bg-gray-100">
-                  <img
-                    src={banner.image_url}
-                    alt="banner"
-                    className="w-full h-full object-cover"
-                  />
+                  {banner.media_type === 'video' ? (
+                    <video
+                      src={banner.image_url}
+                      className="w-full h-full object-cover"
+                      muted
+                      playsInline
+                    />
+                  ) : (
+                    <img
+                      src={banner.image_url}
+                      alt="banner"
+                      className="w-full h-full object-cover"
+                    />
+                  )}
                 </div>
               </td>
 

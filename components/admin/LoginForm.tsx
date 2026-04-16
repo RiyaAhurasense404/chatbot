@@ -1,30 +1,31 @@
 'use client'
 
-import { useState } from 'react'
+import { useState, useTransition } from 'react'
 import { useRouter } from 'next/navigation'
-import { loginAdmin } from '@/lib/services/admin'
+import { loginAction } from '@/app/admin/(auth)/login/actions'
 
 export default function LoginForm() {
   const router = useRouter()
   const [username, setUsername] = useState('')
   const [password, setPassword] = useState('')
   const [error, setError] = useState('')
-  const [isLoading, setIsLoading] = useState(false)
 
-  const handleSubmit = async (e: React.FormEvent) => {
+  const [isPending, startTransition] = useTransition()
+
+  const handleSubmit = (e: React.SyntheticEvent) => {
     e.preventDefault()
     setError('')
-    setIsLoading(true)
 
-    const result = await loginAdmin(username, password)
+    startTransition(async () => {
+      const result = await loginAction(username, password)
 
-    if (!result.success) {
-      setError(result.error || 'Login failed')
-      setIsLoading(false)
-      return
-    }
+      if (!result.success) {
+        setError(result.error || 'Login failed')
+        return
+      }
 
-    router.push('/admin')
+      router.push('/admin')
+    })
   }
 
   return (
@@ -66,10 +67,10 @@ export default function LoginForm() {
 
       <button
         type="submit"
-        disabled={isLoading}
+        disabled={isPending}
         className="bg-blue-500 hover:bg-blue-600 disabled:bg-gray-300 text-white text-base font-medium py-3 rounded-lg transition-colors font-poppins mt-2"
       >
-        {isLoading ? 'Signing in...' : 'Sign in'}
+        {isPending ? 'Signing in...' : 'Sign in'}
       </button>
 
     </form>

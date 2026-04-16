@@ -8,7 +8,6 @@ export default async function AdminCategoriesPage() {
   return (
     <div>
 
-      {/* header */}
       <div className="flex items-center justify-between mb-8">
         <div>
           <h1 className="text-2xl font-bold font-montserrat text-gray-900">
@@ -29,7 +28,6 @@ export default async function AdminCategoriesPage() {
         </Link>
       </div>
 
-      {/* list */}
       <CategoryList categories={categories} />
 
     </div>

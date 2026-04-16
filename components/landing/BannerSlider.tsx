@@ -31,10 +31,22 @@ export default function BannerSlider({ banners }: BannerSliderProps) {
 
   return (
     <section className="relative w-full py-5 overflow-hidden">
-      <div
-        className="absolute inset-0 bg-cover bg-center"
-        style={{ backgroundImage: `url(${banner.background_image_url})` }}
-      />
+      {banner.background_media_type === 'video' ? (
+        <video
+          key={banner.background_image_url}
+          src={banner.background_image_url}
+          className="absolute inset-0 w-full h-full object-cover"
+          autoPlay
+          muted
+          loop
+          playsInline
+        />
+      ) : (
+        <div
+          className="absolute inset-0 bg-cover bg-center"
+          style={{ backgroundImage: `url(${banner.background_image_url})` }}
+        />
+      )}
 
       <div className="absolute inset-0 bg-black/75" />
 
@@ -46,11 +58,23 @@ export default function BannerSlider({ banners }: BannerSliderProps) {
         }`}
       >
         <div className="w-48 h-48 flex-shrink-0">
-          <img
-            src={banner.image_url}
-            alt="banner left"
-            className="w-full h-full object-contain drop-shadow-lg"
-          />
+          {banner.media_type === 'video' ? (
+            <video
+              key={banner.image_url}
+              src={banner.image_url}
+              className="w-full h-full object-contain drop-shadow-lg"
+              autoPlay
+              muted
+              loop
+              playsInline
+            />
+          ) : (
+            <img
+              src={banner.image_url}
+              alt="banner left"
+              className="w-full h-full object-contain drop-shadow-lg"
+            />
+          )}
         </div>
 
         <p className={`${poppins.className} text-white text-center text-4xl font-semibold max-w-5xl px-8 leading-relaxed`}>
@@ -58,11 +82,23 @@ export default function BannerSlider({ banners }: BannerSliderProps) {
         </p>
 
         <div className="w-48 h-48 flex-shrink-0" style={{ transform: 'scaleX(-1)' }}>
-          <img
-            src={banner.image_url}
-            alt="banner right"
-            className="w-full h-full object-contain drop-shadow-lg"
-          />
+          {banner.media_type === 'video' ? (
+            <video
+              key={`${banner.image_url}-right`}
+              src={banner.image_url}
+              className="w-full h-full object-contain drop-shadow-lg"
+              autoPlay
+              muted
+              loop
+              playsInline
+            />
+          ) : (
+            <img
+              src={banner.image_url}
+              alt="banner right"
+              className="w-full h-full object-contain drop-shadow-lg"
+            />
+          )}
         </div>
       </div>
     </section>

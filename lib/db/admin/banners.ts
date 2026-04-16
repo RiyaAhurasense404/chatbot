@@ -1,11 +1,14 @@
 import { supabaseServer } from '@/lib/supabase'
 import { Banner } from '@/types'
 import { DatabaseError } from '@/utils/error'
+import { SaveBannerParams, UpdateBannerParams } from '@/types/admin'
 
 export async function getAllBanners(): Promise<Banner[]> {
   const { data, error } = await supabaseServer
     .from('banners')
-    .select('id, text, image_url, background_image_url, display_order')
+    .select(
+      'id, text, image_url, media_type, background_image_url, background_media_type, display_order'
+    )
     .order('display_order', { ascending: true })
 
   if (error) {
@@ -18,7 +21,9 @@ export async function getAllBanners(): Promise<Banner[]> {
 export async function getBannerById(id: string): Promise<Banner | null> {
   const { data, error } = await supabaseServer
     .from('banners')
-    .select('id, text, image_url, background_image_url, display_order')
+    .select(
+      'id, text, image_url, media_type, background_image_url, background_media_type, display_order'
+    )
     .eq('id', id)
     .maybeSingle()
 
@@ -29,18 +34,22 @@ export async function getBannerById(id: string): Promise<Banner | null> {
   return data
 }
 
-export async function createBanner(
-  text: string,
-  imageUrl: string,
-  backgroundImageUrl: string,
-  displayOrder: number
-): Promise<void> {
+export async function createBanner({
+  text,
+  imageUrl,
+  mediaType,
+  backgroundImageUrl,
+  backgroundMediaType,
+  displayOrder,
+}: SaveBannerParams): Promise<void> {
   const { error } = await supabaseServer
     .from('banners')
     .insert({
       text,
       image_url: imageUrl,
+      media_type: mediaType,
       background_image_url: backgroundImageUrl,
+      background_media_type: backgroundMediaType,
       display_order: displayOrder,
     })
 
@@ -49,19 +58,23 @@ export async function createBanner(
   }
 }
 
-export async function updateBanner(
-  id: string,
-  text: string,
-  imageUrl: string,
-  backgroundImageUrl: string,
-  displayOrder: number
-): Promise<void> {
+export async function updateBanner({
+  id,
+  text,
+  imageUrl,
+  mediaType,
+  backgroundImageUrl,
+  backgroundMediaType,
+  displayOrder,
+}: UpdateBannerParams): Promise<void> {
   const { error } = await supabaseServer
     .from('banners')
     .update({
       text,
       image_url: imageUrl,
+      media_type: mediaType,
       background_image_url: backgroundImageUrl,
+      background_media_type: backgroundMediaType,
       display_order: displayOrder,
     })
     .eq('id', id)

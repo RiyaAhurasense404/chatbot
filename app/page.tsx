@@ -4,16 +4,12 @@ import { getLandingPageData } from '@/lib/cache/landingCache'
 import Navbar from '@/components/landing/Navbar'
 
 export default async function LandingPage() {
-  console.log('🚀 LandingPage — server render started')
   const data = await getLandingPageData()
-  console.log('📦 Data fetched from cache:', Object.keys(data))
-  console.log('🎨 Rendering page...')
 
   return (
     <main>
-        <Navbar />
-      
-      <HeroSection backgroundImageUrl={data.hero.background_image_url} />
+      <Navbar />
+      <HeroSection backgroundImageUrl={data?.hero?.background_image_url ?? ''} backgroundMediaType={data?.hero?.background_media_type} />
       <DynamicSections
         banners={data.banners}
         categories={data.categories}

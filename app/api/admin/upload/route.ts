@@ -28,7 +28,6 @@ export async function POST(request: Request): Promise<Response> {
       ? `${folder}/${timestamp}.${extension}`
       : `${timestamp}.${extension}`
 
-    // convert file to buffer
     const stream = file.stream()
     const chunks: Uint8Array[] = []
     const reader = stream.getReader()
@@ -41,7 +40,6 @@ export async function POST(request: Request): Promise<Response> {
 
     const buffer = Buffer.concat(chunks)
 
-    // use buffer not bytes
     const { data, error } = await supabaseServer.storage
       .from('landing-images')
       .upload(fileName, buffer, {

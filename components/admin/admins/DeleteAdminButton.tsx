@@ -2,7 +2,7 @@
 
 import { useState } from 'react'
 import { useRouter } from 'next/navigation'
-import { deleteAdmin } from '@/lib/services/adminAdmins'
+import { deleteAdminAction } from '@/app/admin/(panel)/admins/actions'
 
 interface DeleteAdminButtonProps {
   id: string
@@ -19,7 +19,7 @@ export default function DeleteAdminButton({ id, username }: DeleteAdminButtonPro
     setIsDeleting(true)
 
     try {
-      await deleteAdmin(id)
+      await deleteAdminAction(id)
       router.refresh()
     } catch (err: any) {
       alert(err.message || 'Failed to delete admin')

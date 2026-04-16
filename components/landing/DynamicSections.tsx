@@ -1,48 +1,80 @@
 'use client'
-import { useEffect, useRef, useState } from 'react'
-import dynamic from 'next/dynamic'
+
+import { useEffect, useState } from 'react'
 import { Banner, Category } from '@/types'
+import BannerSlider from './BannerSlider'
+import CategoriesSection from './CategoriesSection'
+import ChatCTASection from './ChatCTASection'
 
-const BannerSlider = dynamic(() => import('./BannerSlider'), { ssr: false })
-const CategoriesSection = dynamic(() => import('./CategoriesSection'), { ssr: false })
-const ChatCTASection = dynamic(() => import('./ChatCTASection'), { ssr: false })
+interface LazySectionProps {
+  sectionId: string
+  fallbackClassName: string
+  children: React.ReactNode
+}
 
-function LazySection({ children, fallbackHeight }: { children: React.ReactNode, fallbackHeight: string }) {
-  const ref = useRef<HTMLDivElement>(null)
-  const [visible, setVisible] = useState(false)
+function LazySection({
+  sectionId,
+  fallbackClassName,
+  children,
+}: LazySectionProps) {
+  const [isVisible, setIsVisible] = useState(false)
 
   useEffect(() => {
-    const el = ref.current
-    if (!el) return
+    const element = document.getElementById(sectionId)
 
-    const rect = el.getBoundingClientRect()
-    console.log('📍 Section position from top:', rect.top)
+    console.log(`[${sectionId}] mounted, attaching observer`)
+
+    if (!element) {
+      console.log(`[${sectionId}] element not found`)
+      return
+    }
 
     const observer = new IntersectionObserver(
       ([entry]) => {
-        console.log('🔍 Intersection ratio:', entry.intersectionRatio, 'isIntersecting:', entry.isIntersecting)
+        console.log(
+          `🔍 [${sectionId}] ratio:`,
+          entry.intersectionRatio,
+          'isIntersecting:',
+          entry.isIntersecting
+        )
+
         if (entry.isIntersecting) {
-          console.log('👁 Section visible — loading now')
-          setVisible(true)
-          observer.disconnect()
+          console.log(`✅ [${sectionId}] visible → loading component`)
+          setIsVisible(true)
+          observer.unobserve(element)
         }
       },
-      { rootMargin: '0px', threshold: 0 }
+      {
+        root: null,
+        rootMargin: ' 0px',
+        threshold: 0.3,
+      }
     )
 
-    observer.observe(el)
-    return () => observer.disconnect()
-  }, [])
+    observer.observe(element)
+
+    return () => {
+      console.log(`🔴 [${sectionId}] observer disconnected`)
+      observer.disconnect()
+    }
+  }, [sectionId])
+
+  useEffect(() => {
+    if (isVisible) {
+      console.log(`🚀 [${sectionId}] component rendered`)
+    }
+  }, [isVisible, sectionId])
 
   return (
-    <div ref={ref} style={{ minHeight: fallbackHeight }}>
-      {visible ? children : (
+    <section id={sectionId} className={fallbackClassName}>
+      {isVisible ? (
+        children
+      ) : (
         <div
-          style={{ height: fallbackHeight }}
-          className="w-full bg-gray-200 animate-pulse"
+          className={`w-full h-full rounded-md bg-gray-200 animate-pulse ${fallbackClassName}`}
         />
       )}
-    </div>
+    </section>
   )
 }
 
@@ -51,18 +83,30 @@ interface DynamicSectionsProps {
   categories: Category[]
 }
 
-export default function DynamicSections({ banners, categories }: DynamicSectionsProps) {
+export default function DynamicSections({
+  banners,
+  categories,
+}: DynamicSectionsProps) {
   return (
     <>
-      <LazySection fallbackHeight="96px">
+      <LazySection
+        sectionId="banner-section"
+        fallbackClassName="min-h-[100px] md:min-h-[120px]"
+      >
         <BannerSlider banners={banners} />
       </LazySection>
 
-      <LazySection fallbackHeight="500px">
+      <LazySection
+        sectionId="categories-section"
+        fallbackClassName="min-h-[320px] md:min-h-[500px]"
+      >
         <CategoriesSection categories={categories} />
       </LazySection>
 
-      <LazySection fallbackHeight="300px">
+      <LazySection
+        sectionId="chat-cta-section"
+        fallbackClassName="min-h-[220px] md:min-h-[300px]"
+      >
         <ChatCTASection />
       </LazySection>
     </>

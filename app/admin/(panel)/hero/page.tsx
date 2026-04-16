@@ -19,9 +19,9 @@ export default async function AdminHeroPage() {
 
       <div className="bg-white rounded-xl border border-gray-200 p-6">
 
-        <HeroPreview imageUrl={hero.background_image_url} />
+        <HeroPreview imageUrl={hero.background_image_url} mediaType={hero.background_media_type} />
 
-        <HeroUploadForm currentImageUrl={hero.background_image_url} />
+        <HeroUploadForm currentImageUrl={hero.background_image_url} currentMediaType={hero.background_media_type} />
 
       </div>
 

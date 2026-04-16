@@ -2,7 +2,7 @@
 
 import { useState } from 'react'
 import { useRouter } from 'next/navigation'
-import { deleteBanner } from '@/lib/services/adminBanners'
+import { deleteBannerAction } from '@/app/admin/(panel)/banners/actions'
 
 interface DeleteBannerButtonProps {
   id: string
@@ -18,7 +18,7 @@ export default function DeleteBannerButton({ id }: DeleteBannerButtonProps) {
     setIsDeleting(true)
 
     try {
-      await deleteBanner(id)
+      await deleteBannerAction(id)
       router.refresh()
     } catch (err: any) {
       alert(err.message || 'Failed to delete banner')

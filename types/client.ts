@@ -38,4 +38,5 @@ export interface ChatInputProps {
   
   export interface HeroSectionProps {
     backgroundImageUrl: string
+    backgroundMediaType?: 'image' | 'video'
   }

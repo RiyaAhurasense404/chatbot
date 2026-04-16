@@ -111,4 +111,4 @@ function isOpenAIError(error: unknown, status: number): boolean {
     'status' in error &&
     (error as { status: number }).status === status
   )
-}
+}                                                                                                                      

@@ -2,19 +2,30 @@ import Image from "next/image";
 import Link from "next/link";
 import type { HeroSectionProps } from "@/types/client";
 
-export default function HeroSection({ backgroundImageUrl }: HeroSectionProps) {
+export default function HeroSection({ backgroundImageUrl, backgroundMediaType = 'image' }: HeroSectionProps) {
   return (
     <>
       <div className="" />
 
       <section className="relative w-full h-[725px] overflow-hidden">
-        <Image
-          src={backgroundImageUrl}
-          alt="Hero background"
-          fill
-          priority
-          className="object-cover object-top"
-        />
+        {backgroundMediaType === 'video' ? (
+          <video
+            src={backgroundImageUrl}
+            className="absolute inset-0 w-full h-full object-cover object-top"
+            autoPlay
+            muted
+            loop
+            playsInline
+          />
+        ) : (
+          <Image
+            src={backgroundImageUrl}
+            alt="Hero background"
+            fill
+            priority
+            className="object-cover object-top"
+          />
+        )}
 
         <div className="absolute inset-0" />
 

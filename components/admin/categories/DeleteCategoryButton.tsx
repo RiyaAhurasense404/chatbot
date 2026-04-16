@@ -2,7 +2,7 @@
 
 import { useState } from 'react'
 import { useRouter } from 'next/navigation'
-import { deleteCategory } from '@/lib/services/adminCategories'
+import { deleteCategoryAction } from '@/app/admin/(panel)/categories/actions'
 
 interface DeleteCategoryButtonProps {
   id: string
@@ -19,7 +19,7 @@ export default function DeleteCategoryButton({ id, name }: DeleteCategoryButtonP
     setIsDeleting(true)
 
     try {
-      await deleteCategory(id)
+      await deleteCategoryAction(id)
       router.refresh()
     } catch (err: any) {
       alert(err.message || 'Failed to delete category')

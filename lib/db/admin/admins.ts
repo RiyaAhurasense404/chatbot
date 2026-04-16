@@ -37,13 +37,47 @@ export async function createAdmin(
 ): Promise<void> {
   const { error } = await supabaseServer
     .from('admins')
-    .insert({ username, password_hash: passwordHash })
+    .insert({
+      username,
+      password_hash: passwordHash,
+    })
 
   if (error) {
     if (error.code === '23505') {
       throw new DatabaseError('Username already exists')
     }
+
     throw new DatabaseError(`Failed to create admin: ${error.message}`)
+  }
+}
+
+export async function updateAdmin(
+  id: string,
+  username: string,
+  passwordHash?: string
+): Promise<void> {
+  const payload: {
+    username: string
+    password_hash?: string
+  } = {
+    username,
+  }
+
+  if (passwordHash) {
+    payload.password_hash = passwordHash
+  }
+
+  const { error } = await supabaseServer
+    .from('admins')
+    .update(payload)
+    .eq('id', id)
+
+  if (error) {
+    if (error.code === '23505') {
+      throw new DatabaseError('Username already exists')
+    }
+
+    throw new DatabaseError(`Failed to update admin: ${error.message}`)
   }
 }
 

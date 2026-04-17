@@ -85,3 +85,79 @@ export interface Admin {
   password_hash: string
   created_at?: string
 }
+
+export interface CatalogCategory {
+  id: string
+  name: string
+  parent_id: string | null
+  created_at: string
+}
+
+export interface Product {
+  id: string
+  category_id: string
+  name: string
+  price: number
+  discount: number
+  image_url: string | null
+  media_type: MediaType
+  stock: number
+  is_active: boolean
+  display_order: number
+  created_at: string
+}
+
+export interface SaveCatalogCategoryParams {
+  name: string
+  parentId?: string | null
+}
+
+export interface UpdateCatalogCategoryParams extends SaveCatalogCategoryParams {
+  id: string
+}
+
+export interface SaveProductParams {
+  categoryId: string
+  name: string
+  price: number
+  discount: number
+  imageUrl?: string
+  mediaType: MediaType
+  stock: number
+  displayOrder: number
+}
+
+export interface UpdateProductParams extends SaveProductParams {
+  id: string
+}
+
+export interface CatalogCategoryFormProps {
+  category?: CatalogCategory
+  parentId?: string | null
+  returnPath: string
+}
+
+export interface ProductFormProps {
+  categoryId: string
+  product?: Product
+  returnPath: string
+}
+
+export interface DeleteCatalogCategoryButtonProps {
+
+  id: string
+  name: string
+  returnPath: string
+}
+
+export interface DeleteProductButtonProps {
+  id: string
+  name: string
+  categoryId: string
+}
+
+export interface ToggleProductButtonProps {
+  id: string
+  isActive: boolean
+  categoryId: string
+}

@@ -3,6 +3,7 @@ import { notFound } from 'next/navigation'
 import { getCatalogCategoryById } from '@/lib/db/admin/catalog'
 import { getProductById } from '@/lib/db/admin/products'
 import ProductForm from '@/components/admin/catalog/ProductForm'
+import { getAllTagNames, getProductTags } from '@/lib/db/admin/tags'
 
 export default async function EditProductPage({
   params,
@@ -11,12 +12,15 @@ export default async function EditProductPage({
 }) {
   const { id, pid } = await params
 
-  const [category, product] = await Promise.all([
+  const [category, product, allTagNames] = await Promise.all([
     getCatalogCategoryById(id),
     getProductById(pid),
+    getAllTagNames(),
   ])
 
   if (!category || !product) notFound()
+
+  const productTags = await getProductTags(product.id)
 
   return (
     <div>
@@ -45,6 +49,8 @@ export default async function EditProductPage({
         categoryId={id}
         product={product}
         returnPath={`/admin/catalog/${id}`}
+        initialTags={productTags.map((t) => t.name)}
+        allTagNames={allTagNames}
       />
 
     </div>

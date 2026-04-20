@@ -1,126 +1,73 @@
 import Link from 'next/link'
+import DashboardSearch from '@/components/admin/DashboardSearch'
 
-export default function AdminDashboard() {
+const cards = [
+  { id: 'hero', title: 'Hero Image', description: 'Update landing page background', href: '/admin/hero', color: 'blue' },
+  { id: 'categories', title: 'Categories', description: 'Manage landing page categories', href: '/admin/categories', color: 'green' },
+  { id: 'banners', title: 'Banners', description: 'Manage slider banners', href: '/admin/banners', color: 'purple' },
+  { id: 'catalog', title: 'Catalog', description: 'Manage nested product catalog', href: '/admin/catalog', color: 'orange' },
+  { id: 'tags', title: 'Tags', description: 'Manage all product tags', href: '/admin/tags', color: 'pink' },  
+  { id: 'admins', title: 'Admins', description: 'Manage admin users', href: '/admin/admins', color: 'red' },
+]
+
+const colorMap: Record<string, string> = {
+  blue: 'bg-blue-50 text-blue-500',
+  green: 'bg-green-50 text-green-500',
+  purple: 'bg-purple-50 text-purple-500',
+  orange: 'bg-orange-50 text-orange-500',
+  red: 'bg-red-50 text-red-500',
+  pink: 'bg-pink-50 text-pink-500', 
+}
+
+export default async function AdminDashboard({
+  searchParams,
+}: {
+  searchParams: Promise<{ search?: string }>
+}) {
+  const { search = '' } = await searchParams
+
+  const filtered = cards.filter(
+    (card) =>
+      card.title.toLowerCase().includes(search.toLowerCase()) ||
+      card.description.toLowerCase().includes(search.toLowerCase())
+  )
+
   return (
     <div>
-
       <div className="mb-8">
-        <h1 className="text-2xl font-bold font-montserrat text-gray-900">
-          Dashboard
-        </h1>
-        <p className="text-gray-500 text-sm font-poppins mt-1">
-          Manage your landing page content
+        <h1 className="text-2xl font-bold font-montserrat text-gray-900">Dashboard</h1>
+        <p className="text-gray-500 text-sm font-poppins mt-1">Manage your landing page content</p>
+      </div>
+
+      <DashboardSearch defaultValue={search} />
+
+      {search && (
+        <p className="text-sm text-gray-500 font-poppins mb-4">
+          {filtered.length} result{filtered.length !== 1 ? 's' : ''} for "{search}"
         </p>
-      </div>
+      )}
 
-      <div className="grid grid-cols-2 gap-6">
-
-        <Link href="/admin/hero" className="bg-white rounded-xl border border-gray-200 p-6 hover:shadow-md transition-shadow">
-          <div className="flex items-center gap-4 mb-4">
-            <div className="w-10 h-10 bg-blue-50 rounded-lg flex items-center justify-center">
-              <svg xmlns="http://www.w3.org/2000/svg" className="w-5 h-5 text-blue-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z" />
-              </svg>
-            </div>
-            <div>
-              <h2 className="text-base font-semibold font-montserrat text-gray-900">
-                Hero Image
-              </h2>
-              <p className="text-xs text-gray-500 font-poppins">
-                Update background image
-              </p>
-            </div>
-          </div>
-          <p className="text-sm text-blue-500 font-poppins">
-            Manage →
-          </p>
-        </Link>
-
-        <Link href="/admin/categories" className="bg-white rounded-xl border border-gray-200 p-6 hover:shadow-md transition-shadow">
-          <div className="flex items-center gap-4 mb-4">
-            <div className="w-10 h-10 bg-green-50 rounded-lg flex items-center justify-center">
-              <svg xmlns="http://www.w3.org/2000/svg" className="w-5 h-5 text-green-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 6a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2V6zM14 6a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2V6zM4 16a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2v-2zM14 16a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2v-2z" />
-              </svg>
-            </div>
-            <div>
-              <h2 className="text-base font-semibold font-montserrat text-gray-900">
-                Categories
-              </h2>
-              <p className="text-xs text-gray-500 font-poppins">
-                Add edit delete categories
-              </p>
-            </div>
-          </div>
-          <p className="text-sm text-green-500 font-poppins">
-            Manage →
-          </p>
-        </Link>
-
-        <Link href="/admin/banners" className="bg-white rounded-xl border border-gray-200 p-6 hover:shadow-md transition-shadow">
-          <div className="flex items-center gap-4 mb-4">
-            <div className="w-10 h-10 bg-purple-50 rounded-lg flex items-center justify-center">
-              <svg xmlns="http://www.w3.org/2000/svg" className="w-5 h-5 text-purple-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-8l-4-4m0 0L8 8m4-4v12" />
-              </svg>
-            </div>
-            <div>
-              <h2 className="text-base font-semibold font-montserrat text-gray-900">
-                Banners
-              </h2>
-              <p className="text-xs text-gray-500 font-poppins">
-                Manage slider banners
-              </p>
-            </div>
-          </div>
-          <p className="text-sm text-purple-500 font-poppins">
-            Manage →
-          </p>
-        </Link>
-
-        <Link href="/admin/catalog" className="bg-white rounded-xl border border-gray-200 p-6 hover:shadow-md transition-shadow">
-          <div className="flex items-center gap-4 mb-4">
-            <div className="w-10 h-10 bg-teal-50 rounded-lg flex items-center justify-center">
-              <svg xmlns="http://www.w3.org/2000/svg" className="w-5 h-5 text-teal-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10" />
-              </svg>
-            </div>
-            <div>
-              <h2 className="text-base font-semibold font-montserrat text-gray-900">
-                Catalog
-              </h2>
-              <p className="text-xs text-gray-500 font-poppins">
-                Manage categories and products
-              </p>
-            </div>
-          </div>
-          <p className="text-sm text-teal-500 font-poppins">
-            Manage →
-          </p>
-        </Link>
-
-        <Link href="/admin/admins" className="bg-white rounded-xl border border-gray-200 p-6 hover:shadow-md transition-shadow">
-          <div className="flex items-center gap-4 mb-4">
-            <div className="w-10 h-10 bg-orange-50 rounded-lg flex items-center justify-center">
-              <svg xmlns="http://www.w3.org/2000/svg" className="w-5 h-5 text-orange-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197M13 7a4 4 0 11-8 0 4 4 0 018 0z" />
-              </svg>
-            </div>
-            <div>
-              <h2 className="text-base font-semibold font-montserrat text-gray-900">
-                Admins
-              </h2>
-              <p className="text-xs text-gray-500 font-poppins">
-                Manage admin users
-              </p>
-            </div>
-          </div>
-          <p className="text-sm text-orange-500 font-poppins">
-            Manage →
-          </p>
-        </Link>
-
-      </div>
+      {filtered.length === 0 ? (
+        <div className="bg-white rounded-xl border border-gray-200 p-12 text-center">
+          <p className="text-gray-500 font-poppins text-sm">No sections found for "{search}"</p>
+        </div>
+      ) : (
+        <div className="grid grid-cols-2 gap-6">
+          {filtered.map((card) => (
+            <Link
+              key={card.id}
+              href={card.href}
+              className="bg-white rounded-xl border border-gray-200 p-6 hover:shadow-md transition-shadow"
+            >
+              <div className={`w-10 h-10 rounded-lg flex items-center justify-center mb-4 ${colorMap[card.color]}`}>
+                <span className="text-lg font-bold">{card.title[0]}</span>
+              </div>
+              <h2 className="text-base font-semibold font-montserrat text-gray-900">{card.title}</h2>
+              <p className="text-xs text-gray-500 font-poppins mt-1">{card.description}</p>
+            </Link>
+          ))}
+        </div>
+      )}
     </div>
   )
 }

@@ -3,15 +3,17 @@
 import { useState, useTransition } from 'react'
 import { useRouter } from 'next/navigation'
 import { createProductAction, updateProductAction } from '@/app/admin/(panel)/catalog/actions'
-import { Product } from '@/types'
 import { MediaType } from '../../../types/media'
 import {ProductFormProps} from '../../../types/index'
+import TagInput from './TagInput'
 
 
 export default function ProductForm({
   categoryId,
   product,
   returnPath,
+  initialTags = [],
+  allTagNames = [],
 }: ProductFormProps) {
   const router = useRouter()
   const isEditing = !!product
@@ -24,6 +26,7 @@ export default function ProductForm({
   const [previewUrl, setPreviewUrl] = useState(product?.image_url ?? '')
   const [mediaType, setMediaType] = useState<MediaType>(product?.media_type ?? 'image')
   const [displayOrder, setDisplayOrder] = useState(product?.display_order ?? 1)
+  const [tags, setTags] = useState<string[]>(initialTags)
   const [file, setFile] = useState<File | undefined>()
   const [error, setError] = useState('')
   const [isPending, startTransition] = useTransition()
@@ -63,6 +66,7 @@ export default function ProductForm({
               mediaType,
               displayOrder,
             },
+            tags,
             file
           )
         } else {
@@ -78,6 +82,7 @@ export default function ProductForm({
               mediaType,
               displayOrder,
             },
+            tags,
             file
           )
         }
@@ -233,6 +238,17 @@ export default function ProductForm({
             min={1}
             required
             className="border border-gray-300 rounded-lg px-4 py-2.5 text-sm outline-none focus:border-blue-500 font-poppins text-gray-900 w-32"
+          />
+        </div>
+
+        <div className="flex flex-col gap-2">
+          <label className="text-sm font-medium text-gray-700 font-poppins">
+            Tags
+          </label>
+          <TagInput
+            initialTags={initialTags}
+            suggestions={allTagNames}
+            onChange={setTags}
           />
         </div>
 

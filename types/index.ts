@@ -141,6 +141,8 @@ export interface ProductFormProps {
   categoryId: string
   product?: Product
   returnPath: string
+  initialTags?: string[]
+  allTagNames?: string[]
 }
 
 export interface DeleteCatalogCategoryButtonProps {
@@ -160,4 +162,40 @@ export interface ToggleProductButtonProps {
   id: string
   isActive: boolean
   categoryId: string
+}
+
+export interface Tag {
+  id: string
+  name: string
+  created_at: string
+}
+
+export interface TagWithCount extends Tag {
+  product_count: number
+}
+
+export interface TagWithProducts extends Tag {
+  product_count: number
+  products: {
+    id: string
+    name: string
+    category_id: string
+  }[]
+}
+
+export interface DeleteTagButtonProps {
+  id: string
+  name: string
+  productCount: number
+}
+
+export interface TagProductListProps {
+  productCount: number
+  products: TagWithProducts['products']
+}
+
+export interface TagInputProps {
+  initialTags: string[]
+  suggestions: string[]
+  onChange: (tags: string[]) => void
 }

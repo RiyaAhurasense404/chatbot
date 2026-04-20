@@ -2,6 +2,7 @@ import Link from 'next/link'
 import { notFound } from 'next/navigation'
 import { getCatalogCategoryById } from '@/lib/db/admin/catalog'
 import ProductForm from '@/components/admin/catalog/ProductForm'
+import { getAllTagNames } from '@/lib/db/admin/tags'
 
 export default async function NewProductPage({
   params,
@@ -9,7 +10,10 @@ export default async function NewProductPage({
   params: Promise<{ id: string }>
 }) {
   const { id } = await params
-  const category = await getCatalogCategoryById(id)
+  const [category, allTagNames] = await Promise.all([
+    getCatalogCategoryById(id),
+    getAllTagNames(),
+  ])
 
   if (!category) notFound()
 
@@ -38,6 +42,7 @@ export default async function NewProductPage({
       <ProductForm
         categoryId={id}
         returnPath={`/admin/catalog/${id}`}
+        allTagNames={allTagNames}
       />
 
     </div>

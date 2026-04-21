@@ -1,18 +1,22 @@
 import { Redis } from '@upstash/redis'
-import { ConfigError } from '@/utils/error'
 
-const redisUrl = process.env.UPSTASH_REDIS_REST_URL
-const redisToken = process.env.UPSTASH_REDIS_REST_TOKEN
+let _redis: Redis | null = null
 
-if (!redisUrl) {
-  throw new ConfigError('UPSTASH_REDIS_REST_URL is missing from .env.local')
+export function getRedis(): Redis {
+  if (_redis) return _redis
+
+  const url = process.env.UPSTASH_REDIS_REST_URL
+  const token = process.env.UPSTASH_REDIS_REST_TOKEN
+
+  if (!url) throw new Error('UPSTASH_REDIS_REST_URL is missing from .env.local')
+  if (!token) throw new Error('UPSTASH_REDIS_REST_TOKEN is missing from .env.local')
+
+  _redis = new Redis({ url, token })
+  return _redis
 }
 
-if (!redisToken) {
-  throw new ConfigError('UPSTASH_REDIS_REST_TOKEN is missing from .env.local')
-}
-
-export const redis = new Redis({
-  url: redisUrl,
-  token: redisToken,
+export const redis = new Proxy({} as Redis, {
+  get(_, prop) {
+    return (getRedis() as any)[prop]
+  }
 })

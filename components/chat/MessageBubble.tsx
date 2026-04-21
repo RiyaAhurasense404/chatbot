@@ -2,6 +2,7 @@
 
 import ReactMarkdown from 'react-markdown'
 import { MessageBubbleProps } from '@/types/client'
+import rehypeSanitize from 'rehype-sanitize'
 
 export default function MessageBubble({ message }: MessageBubbleProps) {
   const isUser = message.role === 'user'
@@ -32,7 +33,7 @@ export default function MessageBubble({ message }: MessageBubbleProps) {
         {isUser ? (
           <p style={{ margin: 0 }}>{message.content}</p>
         ) : (
-          <ReactMarkdown
+          <ReactMarkdown rehypePlugins={[rehypeSanitize]}
             components={{
               p: ({ children }) => (
                 <p style={{ margin: '0 0 8px 0' }}>{children}</p>

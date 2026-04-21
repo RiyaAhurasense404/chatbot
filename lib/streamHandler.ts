@@ -4,14 +4,7 @@ import { SYSTEM_PROMPT } from '@/lib/systemPrompt'
 import { saveMessages } from '@/lib/db/messages'
 import { updateSessionTitle } from '@/lib/db/sessions'
 import { StreamHandlerParams } from '@/types'
-import { ConfigError, ProviderError } from '@/utils/error'
-
-const openAIKey = process.env.OPENAI_API_KEY
-if (!openAIKey) {
-  throw new ConfigError('OPENAI_API_KEY is missing from .env.local')
-}
-
-const openai = createOpenAI({ apiKey: openAIKey })
+import { ProviderError } from '@/utils/error'
 
 export async function handleStream({
   sessionId,
@@ -19,8 +12,15 @@ export async function handleStream({
   messages,
   messageCount,
 }: StreamHandlerParams): Promise<Response> {
-  try {
 
+  const openAIKey = process.env.OPENAI_API_KEY
+  if (!openAIKey) {
+    throw new ProviderError('OPENAI_API_KEY is missing from .env.local')
+  }
+
+  const openai = createOpenAI({ apiKey: openAIKey })
+
+  try {
     const result = await streamText({
       model: openai('gpt-4o'),
       system: SYSTEM_PROMPT,
@@ -111,4 +111,4 @@ function isOpenAIError(error: unknown, status: number): boolean {
     'status' in error &&
     (error as { status: number }).status === status
   )
-}                                                                                                                      
+}

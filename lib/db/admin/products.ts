@@ -24,8 +24,8 @@ export async function getProductById(id: string): Promise<Product | null> {
   return data
 }
 
-export async function createProduct(params: SaveProductParams): Promise<void> {
-  const { error } = await supabaseServer
+export async function createProduct(params: SaveProductParams): Promise<string> {
+  const { data, error } = await supabaseServer
     .from('products')
     .insert({
       category_id: params.categoryId,
@@ -37,8 +37,11 @@ export async function createProduct(params: SaveProductParams): Promise<void> {
       stock: params.stock,
       display_order: params.displayOrder,
     })
+    .select('id')
+    .single()
 
   if (error) throw new DatabaseError(`Failed to create product: ${error.message}`)
+  return data.id
 }
 
 export async function updateProduct(params: UpdateProductParams): Promise<void> {

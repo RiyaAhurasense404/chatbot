@@ -2,7 +2,7 @@
 
 import { cookies } from 'next/headers'
 import { getIronSession } from 'iron-session'
-import { sessionOptions } from '@/lib/admin/session'
+import { getSessionOptions } from '@/lib/admin/session'
 import { validateCredentials } from '@/lib/admin/auth'
 import { SessionData } from '@/types'
 
@@ -29,7 +29,7 @@ export async function loginAction(
   }
 
   const cookieStore = await cookies()
-  const session = await getIronSession<SessionData>(cookieStore, sessionOptions)
+  const session = await getIronSession<SessionData>(cookieStore, getSessionOptions())
 
   session.isLoggedIn = true
   session.username = trimmedUsername

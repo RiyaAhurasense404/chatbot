@@ -74,11 +74,10 @@ function buildFilePath(
 
 async function uploadToStorage(file: File, filePath: string) {
   const arrayBuffer = await file.arrayBuffer()
-  const buffer = Buffer.from(arrayBuffer)
 
   const { data, error } = await supabaseServer.storage
     .from('landing-images')
-    .upload(filePath, buffer, {
+    .upload(filePath, arrayBuffer, {
       contentType: file.type,
       upsert: false,
     })

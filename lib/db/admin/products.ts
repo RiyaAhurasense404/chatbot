@@ -1,6 +1,10 @@
 import { supabaseServer } from '@/lib/supabase'
 import { Product, SaveProductParams, UpdateProductParams } from '@/types'
 import { DatabaseError } from '@/utils/error'
+import {
+  removeProductFromSearch,
+  syncProductToSearch,
+} from '@/lib/search/productSearchSync'
 
 export async function getProductsByCategory(categoryId: string): Promise<Product[]> {
   const { data, error } = await supabaseServer
@@ -41,6 +45,9 @@ export async function createProduct(params: SaveProductParams): Promise<string> 
     .single()
 
   if (error) throw new DatabaseError(`Failed to create product: ${error.message}`)
+
+  await syncProductToSearch(data.id)
+
   return data.id
 }
 
@@ -59,6 +66,8 @@ export async function updateProduct(params: UpdateProductParams): Promise<void> 
     .eq('id', params.id)
 
   if (error) throw new DatabaseError(`Failed to update product: ${error.message}`)
+
+  await syncProductToSearch(params.id)
 }
 
 export async function deleteProduct(id: string): Promise<void> {
@@ -68,6 +77,8 @@ export async function deleteProduct(id: string): Promise<void> {
     .eq('id', id)
 
   if (error) throw new DatabaseError(`Failed to delete product: ${error.message}`)
+
+  await removeProductFromSearch(id)
 }
 
 export async function toggleProductActive(id: string, isActive: boolean): Promise<void> {
@@ -77,4 +88,6 @@ export async function toggleProductActive(id: string, isActive: boolean): Promis
     .eq('id', id)
 
   if (error) throw new DatabaseError(`Failed to toggle product status: ${error.message}`)
+
+  await syncProductToSearch(id)
 }

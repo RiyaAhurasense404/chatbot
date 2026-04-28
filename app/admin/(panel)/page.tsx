@@ -1,5 +1,6 @@
 import Link from 'next/link'
 import DashboardSearch from '@/components/admin/DashboardSearch'
+import AdminProductSearch from '@/components/admin/search/AdminProductSearch'
 
 const cards = [
   { id: 'hero', title: 'Hero Image', description: 'Update landing page background', href: '/admin/hero', color: 'blue' },
@@ -40,6 +41,7 @@ export default async function AdminDashboard({
       </div>
 
       <DashboardSearch defaultValue={search} />
+      <AdminProductSearch />
 
       {search && (
         <p className="text-sm text-gray-500 font-poppins mb-4">

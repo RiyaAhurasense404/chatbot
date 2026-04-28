@@ -1,5 +1,6 @@
 'use server'
 
+import { requireAdminSession } from '@/lib/admin/session'
 import { revalidatePath } from 'next/cache'
 import { redirect } from 'next/navigation'
 import { uploadMedia } from '@/lib/admin/uploadMedia'
@@ -13,6 +14,7 @@ export async function createCatalogCategoryAction(
   returnPath: string,
   params: SaveCatalogCategoryParams
 ): Promise<void> {
+  await requireAdminSession()
   try {
     await createCatalogCategory(params)
     revalidatePath('/admin/catalog')
@@ -29,6 +31,7 @@ export async function updateCatalogCategoryAction(
   returnPath: string,
   params: UpdateCatalogCategoryParams
 ): Promise<void> {
+  await requireAdminSession()
   try {
     await updateCatalogCategory(params)
     revalidatePath('/admin/catalog')
@@ -45,6 +48,7 @@ export async function deleteCatalogCategoryAction(
   id: string,
   returnPath: string
 ): Promise<void> {
+  await requireAdminSession()
   try {
     await deleteCatalogCategory(id)
     revalidatePath('/admin/catalog')
@@ -62,6 +66,7 @@ export async function createProductAction(
   tagNames: string[],
   file?: File
 ): Promise<void> {
+  await requireAdminSession()
   let productId: string | null = null
 
   try {
@@ -100,6 +105,7 @@ export async function updateProductAction(
   tagNames: string[],
   file?: File
 ): Promise<void> {
+  await requireAdminSession()
   try {
     let imageUrl = params.imageUrl
     let mediaType = params.mediaType
@@ -129,6 +135,7 @@ export async function deleteProductAction(
   id: string,
   categoryId: string
 ): Promise<void> {
+  await requireAdminSession()
   try {
     await deleteProduct(id)
     revalidatePath(`/admin/catalog/${categoryId}`)
@@ -145,6 +152,7 @@ export async function toggleProductActiveAction(
   isActive: boolean,
   categoryId: string
 ): Promise<void> {
+  await requireAdminSession()
   try {
     await toggleProductActive(id, isActive)
     revalidatePath(`/admin/catalog/${categoryId}`)

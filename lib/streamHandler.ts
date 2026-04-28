@@ -27,60 +27,24 @@ export async function handleStream({
       messages,
       temperature: 0.7,
       maxTokens: 1000,
-    })
 
-    const encoder = new TextEncoder()
-    let fullText = ''
-
-    const readable = new ReadableStream({
-      async start(controller) {
+      onFinish: async ({ text }) => {
         try {
-          for await (const chunk of result.textStream) {
-            fullText += chunk
-            controller.enqueue(
-              encoder.encode(`0:${JSON.stringify(chunk)}\n`)
-            )
-          }
-
-          console.log('Stream complete')
-          console.log('Full text length:', fullText.length)
-
-          await saveMessages(
-            sessionId,
-            trimmedMessage,
-            fullText,
-            messageCount
-          )
-          console.log('Messages saved')
+          await saveMessages(sessionId, trimmedMessage, text, messageCount)
+          console.log('Messages saved — length:', text.length)
 
           if (messageCount === 0) {
-            await updateSessionTitle(
-              sessionId,
-              trimmedMessage.slice(0, 50)
-            )
+            await updateSessionTitle(sessionId, trimmedMessage.slice(0, 50))
             console.log('Title updated')
           }
-
-          controller.enqueue(
-            encoder.encode(
-              `d:${JSON.stringify({ finishReason: 'stop' })}\n`
-            )
-          )
-          controller.close()
-          console.log('Stream closed')
-
         } catch (err) {
-          console.error('[Stream processing error]', err)
-          controller.error(err)
+          console.error('[onFinish error]', err)
         }
-      }
+      },
     })
 
-    return new Response(readable, {
-      status: 200,
+    return result.toDataStreamResponse({
       headers: {
-        'Content-Type': 'text/plain; charset=utf-8',
-        'X-Vercel-AI-Data-Stream': 'v1',
         'Cache-Control': 'no-cache',
         'Connection': 'keep-alive',
       },

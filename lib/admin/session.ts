@@ -1,4 +1,6 @@
 import { SessionOptions } from 'iron-session'
+import { getIronSession } from 'iron-session'
+import { cookies } from 'next/headers'
 import { SessionData } from '@/types'
 
 export type { SessionData }
@@ -16,6 +18,14 @@ export function getSessionOptions(): SessionOptions {
       httpOnly: true,
       maxAge: 60 * 60 * 24,
     },
+  }
+}
+
+export async function requireAdminSession(): Promise<void> {
+  const cookieStore = await cookies()
+  const session = await getIronSession<SessionData>(cookieStore, getSessionOptions())
+  if (!session.isLoggedIn) {
+    throw new Error('Unauthorized')
   }
 }
 

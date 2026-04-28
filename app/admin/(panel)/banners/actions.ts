@@ -1,5 +1,6 @@
 'use server'
 
+import { requireAdminSession } from '@/lib/admin/session'
 import { uploadMedia } from '@/lib/admin/uploadMedia'
 import { createBanner, updateBanner, deleteBanner} from '@/lib/db/admin/banners'
 import { invalidateLandingCache } from '@/lib/admin/cacheInvalidator'
@@ -13,6 +14,7 @@ export async function createBannerAction(
     backgroundFile?: File
   }
 ): Promise<void> {
+  await requireAdminSession()
   try {
     let imageUrl = params.imageUrl
     let mediaType = params.mediaType
@@ -64,6 +66,7 @@ export async function updateBannerAction(
     backgroundFile?: File
   }
 ): Promise<void> {
+  await requireAdminSession()
   try {
     let imageUrl = params.imageUrl
     let mediaType = params.mediaType
@@ -109,6 +112,7 @@ export async function updateBannerAction(
 }
 
 export async function deleteBannerAction(id: string): Promise<void> {
+  await requireAdminSession()
   try {
     await deleteBanner(id)
     await invalidateLandingCache()

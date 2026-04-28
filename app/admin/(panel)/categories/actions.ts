@@ -1,5 +1,6 @@
 'use server'
 
+import { requireAdminSession } from '@/lib/admin/session'
 import { uploadMedia } from '@/lib/admin/uploadMedia'
 import{ createCategory, updateCategory, deleteCategory,} from '@/lib/db/admin/categories'
 import { invalidateLandingCache } from '@/lib/admin/cacheInvalidator'
@@ -10,6 +11,7 @@ export async function createCategoryAction(
     params: SaveCategoryParams,
     file?: File
 ): Promise<void> {
+    await requireAdminSession()
     try {
         let imageUrl = params.imageUrl
         let mediaType = params.mediaType
@@ -42,6 +44,7 @@ export async function updateCategoryAction(
     params: UpdateCategoryParams,
     file?: File
 ): Promise<void> {
+    await requireAdminSession()
     try {
         let imageUrl = params.imageUrl
         let mediaType = params.mediaType
@@ -71,6 +74,7 @@ export async function updateCategoryAction(
 }
 
 export async function deleteCategoryAction(id: string): Promise<void> {
+    await requireAdminSession()
     try {
         await deleteCategory(id)
 

@@ -1,6 +1,10 @@
 import { supabaseServer } from '@/lib/supabase'
 import { Tag, TagWithCount, TagWithProducts } from '@/types'
 import { DatabaseError } from '@/utils/error'
+import {
+  syncProductToSearch,
+  syncProductsToSearch,
+} from '@/lib/search/productSearchSync'
 
 export async function getAllTags(): Promise<TagWithCount[]> {
   const { data, error } = await supabaseServer
@@ -88,12 +92,30 @@ export async function createTag(name: string): Promise<Tag> {
 }
 
 export async function deleteTag(id: string): Promise<void> {
+  const { data: affectedProducts, error: affectedProductsError } =
+    await supabaseServer
+      .from('product_tags')
+      .select('product_id')
+      .eq('tag_id', id)
+
+  if (affectedProductsError) {
+    throw new DatabaseError(
+      `Failed to fetch affected products: ${affectedProductsError.message}`
+    )
+  }
+
+  const affectedProductIds = (affectedProducts ?? []).map(
+    (row) => row.product_id
+  )
+
   const { error } = await supabaseServer
     .from('tags')
     .delete()
     .eq('id', id)
 
   if (error) throw new DatabaseError(`Failed to delete tag: ${error.message}`)
+
+  await syncProductsToSearch(affectedProductIds)
 }
 
 export async function syncProductTags(
@@ -132,6 +154,7 @@ export async function syncProductTags(
       if (insertError) throw new DatabaseError(`Failed to link tags: ${insertError.message}`)
     }
 
+    await syncProductToSearch(productId)
   } catch (error) {
     throw new DatabaseError(
       error instanceof Error ? error.message : 'Failed to sync tags'

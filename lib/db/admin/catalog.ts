@@ -1,6 +1,10 @@
 import { supabaseServer } from '@/lib/supabase'
 import { CatalogCategory, SaveCatalogCategoryParams, UpdateCatalogCategoryParams } from '@/types'
 import { DatabaseError } from '@/utils/error'
+import {
+  removeProductFromSearch,
+  syncProductsByCategory,
+} from '@/lib/search/productSearchSync'
 
 export async function getRootCategories(): Promise<CatalogCategory[]> {
     const { data, error } = await supabaseServer
@@ -44,6 +48,53 @@ export async function getRootCategories(): Promise<CatalogCategory[]> {
     if (error) throw new DatabaseError(`Failed to check subcategories: ${error.message}`)
     return (count ?? 0) > 0
   }
+
+  async function getDescendantCategoryIds(categoryId: string): Promise<string[]> {
+    const descendantIds: string[] = []
+    const queue = [categoryId]
+
+    while (queue.length > 0) {
+      const currentId = queue.shift()
+
+      if (!currentId) continue
+
+      descendantIds.push(currentId)
+
+      const { data, error } = await supabaseServer
+        .from('catalog_categories')
+        .select('id')
+        .eq('parent_id', currentId)
+
+      if (error) {
+        throw new DatabaseError(
+          `Failed to fetch descendant categories: ${error.message}`
+        )
+      }
+
+      queue.push(...(data ?? []).map((category) => category.id))
+    }
+
+    return descendantIds
+  }
+
+  async function getProductIdsByCategoryIds(categoryIds: string[]): Promise<string[]> {
+    if (categoryIds.length === 0) {
+      return []
+    }
+
+    const { data, error } = await supabaseServer
+      .from('products')
+      .select('id')
+      .in('category_id', categoryIds)
+
+    if (error) {
+      throw new DatabaseError(
+        `Failed to fetch products by categories: ${error.message}`
+      )
+    }
+
+    return (data ?? []).map((product) => product.id)
+  }
   
   export async function createCatalogCategory(params: SaveCatalogCategoryParams): Promise<void> {
     const { error } = await supabaseServer
@@ -63,15 +114,24 @@ export async function getRootCategories(): Promise<CatalogCategory[]> {
       .eq('id', params.id)
   
     if (error) throw new DatabaseError(`Failed to update category: ${error.message}`)
+
+    await syncProductsByCategory(params.id)
   }
   
   export async function deleteCatalogCategory(id: string): Promise<void> {
+    const categoryIds = await getDescendantCategoryIds(id)
+    const affectedProductIds = await getProductIdsByCategoryIds(categoryIds)
+
     const { error } = await supabaseServer
       .from('catalog_categories')
       .delete()
       .eq('id', id)
-  
+
     if (error) throw new DatabaseError(`Failed to delete category: ${error.message}`)
+
+    await Promise.all(
+      affectedProductIds.map((productId) => removeProductFromSearch(productId))
+    )
   }
   
   export async function getCategoryBreadcrumb(id: string): Promise<CatalogCategory[]> {

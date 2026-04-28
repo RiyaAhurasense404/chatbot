@@ -1,5 +1,6 @@
 'use server'
 
+import { requireAdminSession } from '@/lib/admin/session'
 import { uploadMedia } from '@/lib/admin/uploadMedia'
 import { updateHeroMedia } from '@/lib/db/admin/hero'
 import { invalidateLandingCache } from '@/lib/admin/cacheInvalidator'
@@ -10,6 +11,7 @@ export async function updateHeroAction(
   params: UpdateHeroMediaParams,
   file?: File
 ): Promise<void> {
+  await requireAdminSession()
   try {
     let backgroundImageUrl = params.backgroundImageUrl
     let backgroundMediaType = params.backgroundMediaType

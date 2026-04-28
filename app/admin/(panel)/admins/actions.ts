@@ -1,5 +1,6 @@
 'use server'
 
+import { requireAdminSession } from '@/lib/admin/session'
 import bcrypt from 'bcryptjs'
 import {createAdmin, updateAdmin, deleteAdmin} from '@/lib/db/admin/admins'
 import { DatabaseError } from '@/utils/error'
@@ -19,6 +20,7 @@ export async function createAdminAction({
   username,
   password,
 }: CreateAdminActionParams): Promise<void> {
+  await requireAdminSession()
   try {
     const trimmedUsername = username.trim()
     const trimmedPassword = password.trim()
@@ -46,6 +48,7 @@ export async function updateAdminAction({
   username,
   password,
 }: UpdateAdminActionParams): Promise<void> {
+  await requireAdminSession()
   try {
     const trimmedUsername = username.trim()
 
@@ -68,6 +71,7 @@ export async function updateAdminAction({
 }
 
 export async function deleteAdminAction(id: string): Promise<void> {
+  await requireAdminSession()
   try {
     await deleteAdmin(id)
   } catch (error) {

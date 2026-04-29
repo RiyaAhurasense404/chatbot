@@ -1,5 +1,6 @@
 import Link from 'next/link'
 import SearchBar from '@/components/search/SearchBar'
+import ProfileMenu from '@/components/auth/ProfileMenu'
 
 export default function Navbar() {
   return (
@@ -51,12 +52,8 @@ export default function Navbar() {
           </svg>
         </button>
 
-        {/* user icon */}
-        <button className="text-white hover:text-blue-400 transition-colors">
-          <svg xmlns="http://www.w3.org/2000/svg" className="w-7 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1} d="M16 7a4 4 0 1 1-8 0 4 4 0 0 1 8 0zM12 14a7 7 0 0 0-7 7h14a7 7 0 0 0-7-7z" />
-          </svg>
-        </button>
+        {/* user profile */}
+        <ProfileMenu />
 
       </div>
     </nav>

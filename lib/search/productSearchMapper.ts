@@ -40,6 +40,24 @@ export function mapProductToSearchDocument(
 
   const stock = Number(product.stock ?? 0)
   const stockStatus = getStockStatus(stock)
+  const stockRank = stock > 0 ? 1 : 0
+
+  const viewCount = Number(product.view_count ?? 0)
+  const searchClickCount = Number(product.search_click_count ?? 0)
+  const cartAddCount = Number(product.cart_add_count ?? 0)
+  const orderCount = Number(product.order_count ?? 0)
+
+  const calculatedPopularityScore =
+    viewCount * 1 +
+    searchClickCount * 3 +
+    cartAddCount * 6 +
+    orderCount * 10 +
+    stockRank * 20
+
+  const popularityScore = Math.max(
+    Number(product.popularity_score ?? 0),
+    calculatedPopularityScore
+  )
 
   const tags = extractProductTags(product.product_tags)
   const categoryName = product.catalog_categories?.name ?? null
@@ -68,7 +86,12 @@ export function mapProductToSearchDocument(
     tag_text: tags.join(' '),
 
     display_order: Number(product.display_order ?? 0),
-    popularity_score: 0,
+    stock_rank: stockRank,
+    view_count: viewCount,
+    search_click_count: searchClickCount,
+    cart_add_count: cartAddCount,
+    order_count: orderCount,
+    popularity_score: popularityScore,
 
     created_at: toUnixTimestamp(product.created_at),
     updated_at: toUnixTimestamp(product.updated_at ?? product.created_at),

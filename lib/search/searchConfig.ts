@@ -26,7 +26,7 @@ export const SEARCH_INDEXES = {
     'tag_text',
   ] as const
   
-  export const PRODUCT_FILTERABLE_ATTRIBUTES = [
+export const PRODUCT_FILTERABLE_ATTRIBUTES = [
     'is_active',
     'category_id',
     'category_name',
@@ -35,15 +35,26 @@ export const SEARCH_INDEXES = {
     'final_price',
     'stock_status',
     'stock',
+    'stock_rank',
+    'popularity_score',
+    'order_count',
+    'cart_add_count',
+    'search_click_count',
+    'view_count',
   ] as const
   
-  export const PRODUCT_SORTABLE_ATTRIBUTES = [
+export const PRODUCT_SORTABLE_ATTRIBUTES = [
     'price',
     'final_price',
     'created_at',
     'display_order',
-    'popularity_score',
     'stock',
+    'stock_rank',
+    'popularity_score',
+    'order_count',
+    'cart_add_count',
+    'search_click_count',
+    'view_count',
   ] as const
   
   export const PRODUCT_RANKING_RULES = [
@@ -53,7 +64,12 @@ export const SEARCH_INDEXES = {
     'attribute',
     'sort',
     'exactness',
+    'stock_rank:desc',
     'popularity_score:desc',
+    'order_count:desc',
+    'cart_add_count:desc',
+    'search_click_count:desc',
+    'view_count:desc',
     'display_order:asc',
     'created_at:desc',
   ] as const

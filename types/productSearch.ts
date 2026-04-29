@@ -26,20 +26,10 @@ export type ProductSearchSource = {
   category_id: string | null
   catalog_categories?: CatalogCategoryRow | null
   product_tags?: ProductTagRow[]
+  view_count?: number | null
+  search_click_count?: number | null
+  cart_add_count?: number | null
+  order_count?: number | null
+  popularity_score?: number | null
 }
 
-export interface ProductSearchDocument {
-  id: string
-  name: string
-  price: number
-  discount: number | null
-  imageUrl: string | null
-  mediaType: string | null
-  stock: number
-  isActive: boolean
-  displayOrder: number | null
-  createdAt: string
-  categoryId: string | null
-  categoryName: string | null
-  tagNames: string[]
-}

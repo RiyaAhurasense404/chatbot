@@ -36,6 +36,12 @@ export interface ProductSearchDocument {
 
   created_at: number
   updated_at: number
+
+  stock_rank: number
+  view_count: number
+  search_click_count: number
+  cart_add_count: number
+  order_count: number
 }
 
 export interface SearchSuggestionDocument {

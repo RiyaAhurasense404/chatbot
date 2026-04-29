@@ -1,10 +1,25 @@
 import { supabaseServer } from '@/lib/supabase'
 import { productsIndex, searchSuggestionsIndex } from './meilisearch'
-import { PRODUCT_FILTERABLE_ATTRIBUTES, PRODUCT_RANKING_RULES, PRODUCT_SEARCHABLE_ATTRIBUTES, PRODUCT_SORTABLE_ATTRIBUTES,PRODUCT_SYNONYMS, SUGGESTION_FILTERABLE_ATTRIBUTES, SUGGESTION_RANKING_RULES, SUGGESTION_SEARCHABLE_ATTRIBUTES, SUGGESTION_SORTABLE_ATTRIBUTES } from './searchConfig'
+import {
+  PRODUCT_FILTERABLE_ATTRIBUTES,
+  PRODUCT_RANKING_RULES,
+  PRODUCT_SEARCHABLE_ATTRIBUTES,
+  PRODUCT_SORTABLE_ATTRIBUTES,
+  PRODUCT_SYNONYMS,
+  SUGGESTION_FILTERABLE_ATTRIBUTES,
+  SUGGESTION_RANKING_RULES,
+  SUGGESTION_SEARCHABLE_ATTRIBUTES,
+  SUGGESTION_SORTABLE_ATTRIBUTES,
+} from './searchConfig'
 import { incrementSearchCacheVersion } from './searchCache'
 import { mapProductsToSearchDocuments, type ProductSearchSource } from './productSearchMapper'
-
 import { buildSuggestionsFromProducts } from './searchSuggestions'
+
+const REINDEX_BATCH_SIZE = 1000
+const EMPTY_REINDEX_RESULT = {
+  productsIndexed: 0,
+  suggestionsIndexed: 0,
+}
 
 async function configureProductsIndex() {
   await productsIndex.updateSearchableAttributes([
@@ -51,7 +66,10 @@ async function configureSuggestionsIndex() {
   ])
 }
 
-async function fetchProductsForSearch(): Promise<ProductSearchSource[]> {
+async function fetchProductsForSearchBatch(params: {
+  from: number
+  to: number
+}): Promise<ProductSearchSource[]> {
   const { data, error } = await supabaseServer
     .from('products')
     .select(`
@@ -64,6 +82,11 @@ async function fetchProductsForSearch(): Promise<ProductSearchSource[]> {
       stock,
       is_active,
       display_order,
+      view_count,
+      search_click_count,
+      cart_add_count,
+      order_count,
+      popularity_score,
       created_at,
       category_id,
       catalog_categories (
@@ -79,6 +102,8 @@ async function fetchProductsForSearch(): Promise<ProductSearchSource[]> {
       )
     `)
     .order('display_order', { ascending: true })
+    .order('id', { ascending: true })
+    .range(params.from, params.to)
 
   if (error) {
     throw new Error(`Failed to fetch products for search: ${error.message}`)
@@ -101,33 +126,55 @@ async function fetchProductsForSearch(): Promise<ProductSearchSource[]> {
 }
 
 export async function reindexProductsSearch() {
-  const products = await fetchProductsForSearch()
-
-  const productDocuments = mapProductsToSearchDocuments(products)
-  const suggestionDocuments = buildSuggestionsFromProducts(productDocuments)
-
   await configureProductsIndex()
   await configureSuggestionsIndex()
 
   await productsIndex.deleteAllDocuments()
   await searchSuggestionsIndex.deleteAllDocuments()
 
-  if (productDocuments.length > 0) {
-    await productsIndex.addDocuments(productDocuments, {
-      primaryKey: 'id',
-    })
-  }
+  let offset = 0
+  let productsIndexed = EMPTY_REINDEX_RESULT.productsIndexed
+  let suggestionsIndexed = EMPTY_REINDEX_RESULT.suggestionsIndexed
 
-  if (suggestionDocuments.length > 0) {
-    await searchSuggestionsIndex.addDocuments(suggestionDocuments, {
-      primaryKey: 'id',
+  while (true) {
+    const products = await fetchProductsForSearchBatch({
+      from: offset,
+      to: offset + REINDEX_BATCH_SIZE - 1,
     })
+
+    if (products.length === 0) {
+      break
+    }
+
+    const productDocuments = mapProductsToSearchDocuments(products)
+    const suggestionDocuments = buildSuggestionsFromProducts(productDocuments)
+
+    if (productDocuments.length > 0) {
+      await productsIndex.addDocuments(productDocuments, {
+        primaryKey: 'id',
+      })
+    }
+
+    if (suggestionDocuments.length > 0) {
+      await searchSuggestionsIndex.addDocuments(suggestionDocuments, {
+        primaryKey: 'id',
+      })
+    }
+
+    productsIndexed += productDocuments.length
+    suggestionsIndexed += suggestionDocuments.length
+
+    if (products.length < REINDEX_BATCH_SIZE) {
+      break
+    }
+
+    offset += REINDEX_BATCH_SIZE
   }
 
   await incrementSearchCacheVersion()
 
   return {
-    productsIndexed: productDocuments.length,
-    suggestionsIndexed: suggestionDocuments.length,
+    productsIndexed,
+    suggestionsIndexed,
   }
 }

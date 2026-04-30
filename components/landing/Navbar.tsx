@@ -1,8 +1,16 @@
 import Link from 'next/link'
 import SearchBar from '@/components/search/SearchBar'
 import ProfileMenu from '@/components/auth/ProfileMenu'
+import CartIcon from '@/components/cart/CartIcon'
+import MergeGuestCartOnLogin from '@/components/cart/MergeGuestCartOnLogin'
+import { createSupabaseServerClient } from '@/lib/supabase/server'
 
-export default function Navbar() {
+export default async function Navbar() {
+  const supabase = await createSupabaseServerClient()
+
+  const {
+    data: { user },
+  } = await supabase.auth.getUser()
   return (
     <nav className="w-full bg-black px-8 h-24 py-4 flex items-center justify-between ">
 
@@ -38,12 +46,11 @@ export default function Navbar() {
 
         <SearchBar />
 
+        {/* merge guest cart after login */}
+        <MergeGuestCartOnLogin isLoggedIn={Boolean(user)} />
+
         {/* cart icon */}
-        <button className="text-white hover:text-blue-400 transition-colors">
-          <svg xmlns="http://www.w3.org/2000/svg" className="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1} d="M3 3h2l.4 2M7 13h10l4-8H5.4M7 13l-1.5 6h13M7 13L5.4 5M10 21a1 1 0 1 1-2 0 1 1 0 0 1 2 0zm8 0a1 1 0 1 1-2 0 1 1 0 0 1 2 0z" />
-          </svg>
-        </button>
+        <CartIcon isLoggedIn={Boolean(user)} />
 
         {/* delivery truck icon */}
         <button className="text-white hover:text-blue-400 transition-colors">

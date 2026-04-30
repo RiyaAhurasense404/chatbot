@@ -1,6 +1,7 @@
 'use client'
 
 import { useEffect, useState } from 'react'
+import type { ReactNode } from 'react'
 import { Banner, Category } from '@/types'
 import BannerSlider from './BannerSlider'
 import CategoriesSection from './CategoriesSection'
@@ -9,7 +10,7 @@ import ChatCTASection from './ChatCTASection'
 interface LazySectionProps {
   sectionId: string
   fallbackClassName: string
-  children: React.ReactNode
+  children: ReactNode
 }
 
 function LazySection({
@@ -81,11 +82,13 @@ function LazySection({
 interface DynamicSectionsProps {
   banners: Banner[]
   categories: Category[]
+  productsSection?: ReactNode
 }
 
 export default function DynamicSections({
   banners,
   categories,
+  productsSection,
 }: DynamicSectionsProps) {
   return (
     <>
@@ -109,6 +112,15 @@ export default function DynamicSections({
       >
         <ChatCTASection />
       </LazySection>
+
+      {productsSection ? (
+        <LazySection
+          sectionId="landing-products-section"
+          fallbackClassName="min-h-[520px] md:min-h-[680px]"
+        >
+          {productsSection}
+        </LazySection>
+      ) : null}
     </>
   )
 }

@@ -2,6 +2,7 @@ import HeroSection from '@/components/landing/HeroSection'
 import DynamicSections from '@/components/landing/DynamicSections'
 import { getLandingPageData } from '@/lib/cache/landingCache'
 import Navbar from '@/components/landing/Navbar'
+import LandingProductsSection from '@/components/landing/LandingProductsSection'
 
 export default async function LandingPage() {
   const data = await getLandingPageData()
@@ -9,10 +10,14 @@ export default async function LandingPage() {
   return (
     <main>
       <Navbar />
-      <HeroSection backgroundImageUrl={data?.hero?.background_image_url ?? ''} backgroundMediaType={data?.hero?.background_media_type} />
+      <HeroSection
+        backgroundImageUrl={data?.hero?.background_image_url ?? ''}
+        backgroundMediaType={data?.hero?.background_media_type}
+      />
       <DynamicSections
         banners={data.banners}
         categories={data.categories}
+        productsSection={<LandingProductsSection />}
       />
     </main>
   )

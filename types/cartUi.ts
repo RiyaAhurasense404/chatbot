@@ -7,6 +7,8 @@ export interface AddToCartButtonProps {
     className?: string
     children?: React.ReactNode
     onCartUpdated?: (result: CartActionResult) => void
+    disabled?: boolean
+    disabledMessage?: string
 }
 
 export interface CartIconProps {

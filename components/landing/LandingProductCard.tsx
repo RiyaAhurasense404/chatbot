@@ -89,6 +89,8 @@ export default function LandingProductCard({
           <AddToCartButton
             productId={product.id}
             isLoggedIn={isLoggedIn}
+            disabled={isOutOfStock}
+            disabledMessage="This product is out of stock."
             className="w-full rounded-xl bg-gray-900 px-4 py-3 text-sm font-semibold text-white transition hover:bg-gray-800 disabled:cursor-not-allowed disabled:opacity-60"
           />
         </div>

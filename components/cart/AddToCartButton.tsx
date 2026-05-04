@@ -13,12 +13,19 @@ export default function AddToCartButton({
   className,
   children = 'Add to Cart',
   onCartUpdated,
+  disabled = false,
+  disabledMessage = 'This product is currently unavailable.',
 }: AddToCartButtonProps) {
   const [message, setMessage] = useState<string | null>(null)
   const [isPending, startTransition] = useTransition()
 
   function handleAddToCart() {
     setMessage(null)
+
+    if (disabled) {
+      setMessage(disabledMessage)
+      return
+    }
 
     startTransition(async () => {
       try {
@@ -83,13 +90,13 @@ export default function AddToCartButton({
       <button
         type="button"
         onClick={handleAddToCart}
-        disabled={isPending}
+        disabled={isPending || disabled}
         className={
           className ??
           'rounded-xl bg-gray-900 px-4 py-2 text-sm font-semibold text-white transition hover:bg-gray-800 disabled:cursor-not-allowed disabled:opacity-60'
         }
       >
-        {isPending ? 'Adding...' : children}
+        {isPending ? 'Adding...' : disabled ? 'Out of Stock' : children}
       </button>
 
       {message ? (
